@@ -31,6 +31,7 @@ const {
   sendMediaServerInfoButton,
   openWebSocketButton,
   stopButton,
+  vrButton,
 } = initializeDOMElements();
 let {
   device,
@@ -41,6 +42,10 @@ let {
   controlCommandMap,
   lastDirection,
 } = initializeVariables();
+
+function vrDevice(){
+  
+}
 
 function initializeDOMElements() {
   const pairButton = document.getElementById("pairButton");
@@ -66,7 +71,9 @@ function initializeVariables() {
   let runningMode = "IMAGE";
   let controlCommandMap = {
     Closed_Fist: "N",
-   //TODO: Define more gesture by yourself
+    Open_Palm: "W",
+    Pointing_Up: "S",
+    Thumb_Up: "E",
     Victory: "STOP",
   };
   let lastDirection;
@@ -93,31 +100,13 @@ async function bluetoothPairing() {
 }
 
 function sendMediaServerInfo() {
-  const inputMethod = document.getElementById("inputMethod").value;
-
-    if (inputMethod === "individual") {
-        const ssidInput = document.getElementById("ssidInput").value;
-        const passwordInput = document.getElementById("passwordInput").value;
-        const hostInput = document.getElementById("hostInput").value;
-        const portInput = document.getElementById("portInput").value;
-        const channelInput = document.getElementById("channelInput").value;
-    } else if (inputMethod === "textarea") {
-      const userInput = document.getElementById("userInput").value;
-
-      // Split the textarea input into individual lines
-      const inputLines = userInput.split('\n');
-
-      // Process each line separately
-
-        const ssidInput = inputLines[0];
-        const passwordInput = inputLines[1];
-        const hostInput = inputLines[2];
-        const portInput = inputLines[3];
-        const channelInput = inputLines[4];
-
-    }
+  const ssidInput = document.getElementById("ssidInput");
+  const passwordInput = document.getElementById("passwordInput");
+  const hostInput = document.getElementById("hostInput");
+  const portInput = document.getElementById("portInput");
+  const channelInput = document.getElementById("channelInput");
   const robotSelect = document.getElementById("robotSelect");
-    
+
   networkConfig = {
     ssid: ssidInput.value,
     password: passwordInput.value,
@@ -149,7 +138,12 @@ function sendMediaServerInfo() {
     sendMessageToDeviceOverBluetooth(JSON.stringify(metricData), device);
   }
 }
+function handleChunk(frame) {
+  const canvasElement = document.getElementById("canvasElement");
 
+  drawVideoFrameOnCanvas(canvasElement, frame);
+  frame.close();
+}
 function openWebSocket() {
   const videoElement = document.getElementById("videoElement");
 
@@ -174,6 +168,33 @@ function openWebSocket() {
     }
   };
   displayMessage("Open Video WebSocket");
+  const videoDecoder = new VideoDecoder({
+    output: handleChunk,
+    error: (error) => console.error(error),
+  });
+
+  const videoDecoderConfig = {
+    codec: "avc1.42E03C",
+  };
+
+  videoDecoder.configure(videoDecoderConfig);
+
+  websocket.onmessage = (e) => {
+    try {
+      if (videoDecoder.state === "configured") {
+        const encodedChunk = new EncodedVideoChunk({
+          type: "key",
+          data: e.data,
+          timestamp: e.timeStamp,
+          duration: 0,
+        });
+
+        videoDecoder.decode(encodedChunk);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
   keepWebSocketAlive(websocket);
 }
 
@@ -238,61 +259,73 @@ async function detectHandGestureFromVideo(gestureRecognizer, stream) {
 async function connectToBluetoothDevice(deviceNamePrefix) {
   const options = {
     filters: [
+      { namePrefix: deviceNamePrefix },
       { services: [UART_SERVICE_UUID] },
     ].filter(Boolean),
   };
 
   try {
-    // TODO: Step 1 - Search for a Bluetooth device with a specific service UUID
-    // TODO: Use the 'navigator.bluetooth.requestDevice' function with the 'options' to find a device
-    // TODO: Store the selected device in a variable named 'device'
+    device = await navigator.bluetooth.requestDevice(options);
+    console.log("Found Bluetooth device: ", device);
 
-    // TODO: Step 2 - Establish a GATT connection
-    // TODO: Use the 'device.gatt?.connect()' function to establish a GATT connection
-    // TODO: Handle any errors that might occur during the connection process
+    await device.gatt?.connect();
+    console.log("Connected to GATT server");
 
-    // TODO: Step 3 - Return the connected device
-    // TODO: Return the 'device' object after successfully connecting
+    return device;
   } catch (error) {
-    // TODO: Handle any errors that occur during the device discovery or connection
     console.error(error);
   }
 }
 
 function disconnectFromBluetoothDevice(device) {
-  // TODO: Check if the Bluetooth device is connected
-  // TODO: Use the 'device.gatt?.connected' property to determine if the device is currently connected
-
-  // TODO: If the device is connected, initiate the disconnection process
-  // TODO: Use the 'device.gatt.disconnect()' function to disconnect from the Bluetooth server
-
-  // TODO: If the device is not connected, handle the case
-  // TODO: Log a message to the console indicating that the device is already disconnected
+  if (device.gatt?.connected) {
+    device.gatt.disconnect();
+  } else {
+    console.log("Bluetooth Device is already disconnected");
+  }
 }
 
 async function sendMessageToDeviceOverBluetooth(message, device) {
   const MAX_MESSAGE_LENGTH = 15;
-  
-  // TODO: Step 1 - Prepare the message chunks
-  // TODO: Split the 'message' into smaller chunks of length 'MAX_MESSAGE_LENGTH'
-  // TODO: Store each chunk in the 'messageArray' array
+  const messageArray = [];
 
-  // TODO: Step 2 - Add length information to the first chunk
-  // TODO: Modify the first chunk in 'messageArray' to include the length information
+  // Split message into smaller chunks
+  while (message.length > 0) {
+    const chunk = message.slice(0, MAX_MESSAGE_LENGTH);
+    message = message.slice(MAX_MESSAGE_LENGTH);
+    messageArray.push(chunk);
+  }
 
-  // TODO: Step 3 - Add special characters to other chunks
-  // TODO: Modify the remaining chunks in 'messageArray' to include special characters
+  if (messageArray.length > 1) {
+    messageArray[0] = `${messageArray[0]}#${messageArray.length}$`;
+    for (let i = 1; i < messageArray.length; i++) {
+      messageArray[i] = `${messageArray[i]}$`;
+    }
+  }
 
-  // TODO: Step 4 - Establish GATT connection and get required objects
-  // TODO: Connect to the GATT server of the 'device'
-  // TODO: Get the UART service from the server
-  // TODO: Get the UART RX characteristic from the service
+  console.log("Connecting to GATT Server...");
+  const server = await device.gatt?.connect();
 
-  // TODO: Step 5 - Send the message chunks
-  // TODO: Check if the 'rxCharacteristic' properties support writing
-  // TODO: Use a loop to send each chunk to the device
-  // TODO: Encode each chunk using 'TextEncoder' before sending
-  // TODO: Handle errors that may occur during the write operation
+  console.log("Getting UART Service...");
+  const service = await server?.getPrimaryService(UART_SERVICE_UUID);
+
+  console.log("Getting UART RX Characteristic...");
+  const rxCharacteristic = await service?.getCharacteristic(
+    UART_RX_CHARACTERISTIC_UUID
+  );
+
+  // Check GATT operations is ready to write
+  if (rxCharacteristic?.properties.write) {
+    // Send each chunk to the device
+    for (const chunk of messageArray) {
+      try {
+        await rxCharacteristic?.writeValue(new TextEncoder().encode(chunk));
+        console.log(`Message sent: ${chunk}`);
+      } catch (error) {
+        console.error(`Error sending message: ${error}`);
+      }
+    }
+  }
 }
 
 async function getVideoStream({
@@ -322,7 +355,14 @@ function displayMessage(messageContent) {
   messageView.innerHTML += `${messageContent}\n`;
   messageView.scrollTop = messageView.scrollHeight;
 }
+function drawVideoFrameOnCanvas(canvas, frame) {
+  console.log("drawing video frame on canvas");
+  
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return;
 
+  ctx.drawImage(frame, 0, 0, canvas.width, canvas.height);
+}
 function keepWebSocketAlive(webSocket, interval) {
   const pingInterval = interval ?? 10000;
   let pingTimer;
