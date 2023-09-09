@@ -1,0 +1,218 @@
+/* CSS đã chỉnh sửa */
+body {
+  font-family: "Arial", sans-serif;
+  font-weight: 300;
+  margin: 0;
+  padding: 0;
+  background-color: #567bff;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  color: #303030;
+  line-height: 1.6;
+}
+
+#back {
+  position: fixed;
+  top: 15px;
+  left: 10px;
+  background-color: #190058;
+  color: white;
+  padding: 2px 20px;
+  border-radius: 5px;
+  text-decoration: none;
+  z-index: 100;
+}
+
+#back a {
+  text-decoration: none;
+  color: white;
+}
+
+#back:hover {
+  background-color: #7e7a81;
+}
+
+a {
+  color: #1a67e4fa;
+  font-weight: 400;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #3d85c6;
+  text-decoration: underline;
+}
+
+h1 {
+  font-family: "Arial", sans-serif;
+  color: #ffffff;
+  text-align: center;
+  font-weight: 500;
+  font-size: 1.5em;
+  margin: 0 0 0.8em 0;
+  padding: 0 0 0.2em 0;
+  border-bottom: 1px solid #ccc;
+  background-image: url(../img/background3.jpg)
+}
+
+h2 {
+  color: #000000;
+  font-weight: 500;
+  font-size: 1.3em;
+  margin-block: 0.5em;
+}
+
+p {
+  font-weight: 300;
+  font-size: 1em;
+  margin-block: 0.5em;
+}
+
+/* Components */
+.hidden {
+  display: none;
+}
+
+.highlight {
+  background-color: #ececec;
+  font-size: 1.2em;
+  margin: 0 0 30px 0;
+  padding: 0.8em 1.5em;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.warning {
+  color: red;
+  font-weight: 400;
+}
+
+button {
+  color: white;
+  font-family: "Arial", sans-serif;
+  font-size: 1em;
+  margin: 0 0 1em 0;
+  padding: 0.5em 1em;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  background-image: url('../img/background3.jpg');
+  background-size: cover;
+}
+
+button:hover {
+  background-color: #4568c8;
+}
+
+button[disabled] {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+canvas {
+  background-color: #f0f0f0;
+  max-width: 100%;
+  width: 100%;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+code {
+  font-family: "Arial", sans-serif;
+  font-weight: 400;
+  background-color: #ffffff;
+  padding: 0.2em 0.5em;
+  border-radius: 4px;
+}
+
+div#container {
+  margin: 0 auto;
+  max-width: 60em;
+  padding: 1em 1.5em 1.3em 1.5em;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: rgba(255, 255, 255, 0.8); /* Đặt màu nền cho container */
+}
+
+div#links a {
+  display: block;
+  margin: 0 0 1em 0;
+  color: #444;
+  font-size: 1.1em;
+}
+
+div.box {
+  position: relative;
+  max-width: 100%;
+  width: 100%;
+  padding-bottom: 56.25%;
+  
+}
+
+/* Đảm bảo các input nằm trên cùng một hàng */
+label {
+  display: inline-block;
+  width: 150px;
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="number"],
+textarea,
+select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+ul {
+  margin-block: 0;
+}
+
+img {
+  transform: scaleX(-1);
+  border-radius: 10px;
+  position: absolute;
+  top:0;
+  right:0;
+  width: 20%;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+canvas{
+  border-radius: 10px;
+  background-color: #222;
+  max-width: 100%;
+  width: 100%;
+  height: auto;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+fieldset {
+  margin: 0 0 1em 0;
+  border: none;
+}
+
+fieldset > select {
+  margin-top: 1em;
+}
+.back-button {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #567bff; /* Màu nền */
+  color: white; /* Màu chữ */
+  text-decoration: none; /* Loại bỏ gạch chân liên kết */
+  border: none; /* Loại bỏ viền */
+  border-radius: 4px; /* Bo tròn góc */
+  cursor: pointer;
+  transition: background-color 0.3s ease; /* Hiệu ứng màu nền thay đổi khi hover */
+}
+
+.back-button:hover {
+  background-color: #4568c8; /* Màu nền thay đổi khi hover */
+}
