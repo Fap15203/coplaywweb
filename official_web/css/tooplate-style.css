@@ -137,6 +137,13 @@ footer a:link, footer a:visited {
   line-height: 1.8;
 }
 
+.tm-textbox-contact {
+  padding: 30px;
+  font-size: 0.8rem;
+  color: #c5c7c6;
+  line-height: 1.8;
+}
+
 .tm-textbox-2 {
   padding: 60px 40px 60px;
 }
@@ -318,7 +325,9 @@ footer {
 /*-----------------*/
 
 figure.effect-goliath {
-  background: #df4e4e;
+  background: #db9b1b;
+  min-width: 384px;
+  min-height: 216px;
 }
 
 figure.effect-goliath img,
@@ -330,6 +339,7 @@ figure.effect-goliath h2 {
 figure.effect-goliath img {
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
+
 }
 
 figure.effect-goliath h2 {
@@ -347,7 +357,7 @@ figure.effect-goliath p {
   text-transform: none;
   font-size: 1rem;
   padding: 15px 10px;
-  opacity: 0;
+  opacity: 1;
   -webkit-transition: opacity 0.35s, -webkit-transform 0.35s;
   transition: opacity 0.35s, transform 0.35s;
   -webkit-transform: translate3d(0, 50px, 0);
